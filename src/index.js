@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { TodoServices } from './services/Services';
 
+TodoServices.createDB();
 ReactDOM.render(
   <React.StrictMode>
     <App />
