@@ -1,16 +1,34 @@
 import { Checkbox } from '@mantine/core';
 import React from 'react';
 import { X } from 'tabler-icons-react';
+import { TodoServices } from '../../services/Services';
+import { actions, useStore } from '../../store';
 
 
-function ContentItem({ item, deleteTodo, updateTodo }) {
+function ContentItem({ item, updateStatusTodo }) {
+
+
+    const [state, dispatch] = useStore();
+    const { todos } = state;
 
     const handleChange = value => {
         const data = {
             id: item.id,
             active: value ? 1 : 0
         };
-        updateTodo(data);
+        updateStatusTodo(data);
+    }
+
+    const deleteTodo = id => {
+        const newTodo = todos.filter(item => item.id !== id);
+        const itemDelete = todos.filter(item => item.id === id);
+        dispatch(actions.getTodos(newTodo));
+        TodoServices.deleteTodo(id)
+            .then(res => console.log(res))
+            .catch(error => {
+                console.log(error);
+                dispatch(actions.getTodos(todos.concat(itemDelete)));
+            });
     }
 
     return (

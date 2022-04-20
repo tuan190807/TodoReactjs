@@ -7,17 +7,23 @@ export const TodoServices = {
         });
     },
 
-    addTodo(request) {
+    async addTodo(request) {
         let idTodo = 0;
-        db.transaction(function (tx) {
+        await db.transaction(function (tx) {
             tx.executeSql('SELECT MAX(id) id FROM TODO', [], function (tx, results) {
                 idTodo = (results.rows[0].id)
             });
 
         });
         const commandInsert = ('INSERT INTO TODO (id ,name, active) VALUES (?, ?, ?)');
-        db.transaction(function (tx) {
-            tx.executeSql(commandInsert, [idTodo + 1, request.name, request.active]);
+        return new Promise((resolve, reject) => {
+            db.transaction(function (tx) {
+                tx.executeSql(commandInsert, [idTodo + 1, request.name, request.active], (tx, results) => {
+                    resolve("add done!")
+                }, (tx, error) => {
+                    reject(error);
+                });
+            });
         });
     },
 
@@ -34,14 +40,26 @@ export const TodoServices = {
     },
 
     deleteTodo(id) {
-        db.transaction(function (tx) {
-            tx.executeSql(`DELETE FROM TODO WHERE id=${id}`);
-        });
+        return new Promise((resolve, reject) => {
+            db.transaction(function (tx) {
+                tx.executeSql(`DELETE FROM TODO WHERE id=${id}`, [], function (tx, results) {
+                    resolve('delete done!')
+                }, (tx, error) => {
+                    reject(error);
+                });
+            });
+        })
     },
 
     deleteCompleted() {
-        db.transaction(function (tx) {
-            tx.executeSql(`DELETE FROM TODO WHERE active = 1`);
+        return new Promise((resolve, reject) => {
+            db.transaction(function (tx) {
+                tx.executeSql(`DELETE FROM TODO WHERE active = 1`, [], function (tx, results) {
+                    resolve('delete done!')
+                }, (tx, error) => {
+                    reject(error);
+                });
+            });
         });
     },
 
